@@ -25,18 +25,21 @@ app/
   layout.tsx                  # Root layout (fonts, metadata)
   globals.css                 # Tailwind + custom Melt color tokens
   client/
-    page.tsx                  # Client view: lock screen → chat flow
+    page.tsx                  # Client view: lock → chat → status flow
   analyst/
     page.tsx                  # (TODO) Analyst dashboard
   api/
     chat/route.ts             # Claude API endpoint
   components/
-    LockScreen.tsx            # Account frozen screen with "Resolve Now" CTA
-    ChatInterface.tsx         # Chat UI with message bubbles
+    LockScreen.tsx            # Account locked screen with "Resolve Now" CTA
+    ChatInterface.tsx         # Chat UI with contextual action buttons
+    CaseStatus.tsx            # Post-chat case status screen (case ID, timeline)
+    ProgressBar.tsx           # 4-step progress indicator
+    DeviceFrame.tsx           # Phone silhouette wrapper (desktop only)
     CaseSummary.tsx           # (TODO) Analyst case summary card
     ViewToggle.tsx            # (TODO) Client/analyst view switcher
   lib/
-    systemPrompt.ts           # MeltBot system prompt with scenario context
+    systemPrompt.ts           # MeltBot system prompt with scenario context + response tags
 ```
 
 ## Color Palette (Melt Theme)
@@ -80,16 +83,24 @@ All colors are CSS custom properties defined in `globals.css` and exposed to Tai
 - Returns `{ message: string }` on success, `{ error: string }` on failure
 - System prompt imported from `app/lib/systemPrompt.ts`
 
+### Response Tags (System Prompt → Frontend)
+- `[REQUEST_DOCUMENT:Photo ID]` — triggers "Attach Photo ID" button in chat
+- `[REQUEST_CONFIRM:Acknowledge]` — triggers "Confirm" button in chat
+- `[CASE_SUMMARY]` — parsed and stripped; JSON saved to state, triggers status screen transition
+- Tags are stripped from displayed messages — client never sees them
+
 ### State Management
 - React state only (useState, useRef) — no external state libraries
 - Message history: `Message[]` where `Message = { role: "user" | "assistant", content: string }`
+- `caseSummary` state lifted to `client/page.tsx` for cross-component access
+- Client view flow: `"lock" → "chat" → "status"` (3 view states)
 - No database, no persistence — all state is ephemeral per session
 
 ## The Scenario (Hardcoded)
 
 - **Client:** Michael
 - **Accounts:** TFSA + Chequing
-- **Flag:** Duplicate account (old university email + new personal email)
+- **Flag:** Duplicate account (two accounts under same identity, different emails)
 - **Collection flow (4 steps):**
   1. Government photo ID
   2. Confirm duplicate account email

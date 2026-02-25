@@ -11,10 +11,20 @@
 - [x] Create ProgressBar component (4-step visual indicator)
 - [x] Add simulated "Attach Photo ID" button to ChatInterface
 - [x] Wire step advancement logic into ChatInterface
-- [ ] Test full conversation flow end to end
+- [x] Device frame wrapper (phone silhouette on desktop)
+- [x] 3D gradient lock icon
+- [x] Change "frozen" to "locked" in lock screen
+- [x] System prompt tone fix (confident, not investigative)
+- [x] "MeltBot is reading your case..." loading state
+- [x] Contextual action buttons via response tags ([REQUEST_DOCUMENT], [REQUEST_CONFIRM])
+- [x] Parse [CASE_SUMMARY] from Claude's output, hide JSON from client
+- [x] Fix progress bar advancement for non-tagged steps (2 and 3)
+- [x] Realistic flag reason (agent only knows what compliance surfaces)
+- [x] Case status screen (case ID, timeline, estimated resolution)
+- [x] Auto-transition from chat to status screen after completion
+- [x] Test full conversation flow end to end
 
 ## Day 3 (Feb 28) -- Analyst View + Summary Generation
-- [ ] Parse [CASE_SUMMARY] from Claude's output
 - [ ] Build analyst case summary card
 - [ ] Add approve/escalate buttons with confirmation states
 - [ ] Build view toggle (client view / analyst view)

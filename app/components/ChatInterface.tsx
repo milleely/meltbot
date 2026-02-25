@@ -10,9 +10,10 @@ interface Message {
 
 interface ChatInterfaceProps {
   onCaseSummary?: (summary: Record<string, unknown>) => void;
+  onComplete?: () => void;
 }
 
-export default function ChatInterface({ onCaseSummary }: ChatInterfaceProps) {
+export default function ChatInterface({ onCaseSummary, onComplete }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -54,6 +55,9 @@ export default function ChatInterface({ onCaseSummary }: ChatInterfaceProps) {
         try {
           const parsed = JSON.parse(jsonPart);
           onCaseSummary?.(parsed);
+          if (onComplete) {
+            setTimeout(onComplete, 2000);
+          }
         } catch {
           // JSON parse failed — still hide the raw text from the client
         }
@@ -95,7 +99,7 @@ export default function ChatInterface({ onCaseSummary }: ChatInterfaceProps) {
     setMessages(updatedMessages);
     setInput("");
 
-    if (pendingAction && step < 4) {
+    if (step >= 1 && step < 4) {
       setStep((prev) => prev + 1);
     }
 
