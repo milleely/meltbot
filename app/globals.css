@@ -1,26 +1,34 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --melt-bg: #0A0A0A;
+  --melt-surface: #1A1A1A;
+  --melt-border: #2A2A2A;
+  --melt-muted: #6B6B6B;
+  --melt-text: #E8E4DF;
+  --melt-accent: #C9A96E;
+  --melt-accent-hover: #D4B87A;
+  --melt-danger: #D4453A;
+  --melt-success: #4A9B6E;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-melt-bg: var(--melt-bg);
+  --color-melt-surface: var(--melt-surface);
+  --color-melt-border: var(--melt-border);
+  --color-melt-muted: var(--melt-muted);
+  --color-melt-text: var(--melt-text);
+  --color-melt-accent: var(--melt-accent);
+  --color-melt-accent-hover: var(--melt-accent-hover);
+  --color-melt-danger: var(--melt-danger);
+  --color-melt-success: var(--melt-success);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--melt-bg);
+  color: var(--melt-text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
