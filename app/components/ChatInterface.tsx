@@ -121,19 +121,21 @@ export default function ChatInterface({ onCaseSummary, onComplete }: ChatInterfa
 
   return (
     <div className="min-h-full flex flex-col bg-melt-bg">
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-melt-border flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-melt-accent text-melt-bg">
-          M
+      <div className="sticky top-0 z-10 bg-melt-bg">
+        {/* Header */}
+        <div className="px-4 py-3 border-b border-melt-border flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-melt-accent text-melt-bg">
+            M
+          </div>
+          <div>
+            <p className="text-sm font-medium text-melt-text">MeltBot</p>
+            <p className="text-xs text-melt-success">Online</p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-medium text-melt-text">MeltBot</p>
-          <p className="text-xs text-melt-success">Online</p>
-        </div>
-      </div>
 
-      {/* Progress */}
-      <ProgressBar step={step} />
+        {/* Progress */}
+        <ProgressBar step={step} />
+      </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
