@@ -8,12 +8,15 @@ interface Message {
   content: string;
 }
 
-export default function ChatInterface() {
+interface ChatInterfaceProps {
+  onCaseSummary?: (summary: Record<string, unknown>) => void;
+}
+
+export default function ChatInterface({ onCaseSummary }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(0);
-  const [photoIdAttached, setPhotoIdAttached] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const greetingFired = useRef(false);
 
@@ -38,9 +41,27 @@ export default function ChatInterface() {
         body: JSON.stringify({ messages: currentMessages }),
       });
       const data = await res.json();
+      let displayText = data.message;
+
+      // Parse and extract [CASE_SUMMARY] if present
+      const summaryIndex = data.message.indexOf("[CASE_SUMMARY]");
+      if (summaryIndex !== -1) {
+        displayText = data.message.slice(0, summaryIndex).trim();
+        const jsonPart = data.message.slice(summaryIndex + "[CASE_SUMMARY]".length)
+          .replace(/```json\s?/g, "")
+          .replace(/```/g, "")
+          .trim();
+        try {
+          const parsed = JSON.parse(jsonPart);
+          onCaseSummary?.(parsed);
+        } catch {
+          // JSON parse failed — still hide the raw text from the client
+        }
+      }
+
       setMessages([
         ...currentMessages,
-        { role: "assistant", content: data.message },
+        { role: "assistant", content: displayText },
       ]);
     } catch {
       setMessages([
@@ -55,6 +76,16 @@ export default function ChatInterface() {
     }
   }
 
+  // Derive pending action from the last message's tags
+  const lastMsg = messages[messages.length - 1];
+  const docMatch = lastMsg?.role === "assistant" && lastMsg.content.match(/\[REQUEST_DOCUMENT:(.+?)\]/);
+  const confirmMatch = lastMsg?.role === "assistant" && lastMsg.content.match(/\[REQUEST_CONFIRM:(.+?)\]/);
+  const pendingAction = docMatch
+    ? { type: "document" as const, label: docMatch[1] }
+    : confirmMatch
+    ? { type: "confirm" as const, label: confirmMatch[1] }
+    : null;
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -64,22 +95,21 @@ export default function ChatInterface() {
     setMessages(updatedMessages);
     setInput("");
 
-    if (photoIdAttached && step >= 1 && step < 4) {
+    if (pendingAction && step < 4) {
       setStep((prev) => prev + 1);
     }
 
     fetchResponse(updatedMessages);
   }
 
-  function handleAttachPhotoId() {
-    if (photoIdAttached || isLoading) return;
-    setPhotoIdAttached(true);
-    setStep(1);
+  function handleAction() {
+    if (!pendingAction || isLoading) return;
+    if (step < 4) setStep((prev) => prev + 1);
 
-    const userMessage: Message = {
-      role: "user",
-      content: "[Photo ID attached: Driver's License]",
-    };
+    const content = pendingAction.type === "document"
+      ? `[${pendingAction.label} attached: Driver's License]`
+      : "I confirm and acknowledge.";
+    const userMessage: Message = { role: "user", content };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     fetchResponse(updatedMessages);
@@ -115,7 +145,7 @@ export default function ChatInterface() {
                   : "bg-melt-surface text-melt-text rounded-2xl rounded-bl-md"
               }`}
             >
-              {msg.content}
+              {msg.content.replace(/\[REQUEST_(?:DOCUMENT|CONFIRM):.+?\]/g, "").trim()}
             </div>
           </div>
         ))}
@@ -137,15 +167,16 @@ export default function ChatInterface() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Attach Photo ID */}
-      {!photoIdAttached && messages.length > 0 && (
+      {/* Contextual action button */}
+      {pendingAction && !isLoading && (
         <div className="px-4 pt-2">
           <button
-            onClick={handleAttachPhotoId}
-            disabled={isLoading}
-            className="w-full py-2.5 rounded-xl text-xs font-medium border border-melt-border text-melt-muted hover:text-melt-text hover:border-melt-accent/50 transition-colors disabled:opacity-40"
+            onClick={handleAction}
+            className="w-full py-2.5 rounded-xl text-xs font-medium border border-melt-border text-melt-muted hover:text-melt-text hover:border-melt-accent/50 transition-colors"
           >
-            Attach Photo ID
+            {pendingAction.type === "document"
+              ? `Attach ${pendingAction.label}`
+              : "Confirm"}
           </button>
         </div>
       )}

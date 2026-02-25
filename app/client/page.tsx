@@ -7,11 +7,12 @@ import DeviceFrame from "@/app/components/DeviceFrame";
 
 export default function ClientPage() {
   const [view, setView] = useState<"lock" | "chat">("lock");
+  const [caseSummary, setCaseSummary] = useState<Record<string, unknown> | null>(null);
 
   return (
     <DeviceFrame>
       {view === "chat" ? (
-        <ChatInterface />
+        <ChatInterface onCaseSummary={setCaseSummary} />
       ) : (
         <LockScreen onResolveNow={() => setView("chat")} />
       )}
