@@ -3,13 +3,18 @@
 import { useState } from "react";
 import LockScreen from "@/app/components/LockScreen";
 import ChatInterface from "@/app/components/ChatInterface";
+import DeviceFrame from "@/app/components/DeviceFrame";
 
 export default function ClientPage() {
   const [view, setView] = useState<"lock" | "chat">("lock");
 
-  if (view === "chat") {
-    return <ChatInterface />;
-  }
-
-  return <LockScreen onResolveNow={() => setView("chat")} />;
+  return (
+    <DeviceFrame>
+      {view === "chat" ? (
+        <ChatInterface />
+      ) : (
+        <LockScreen onResolveNow={() => setView("chat")} />
+      )}
+    </DeviceFrame>
+  );
 }

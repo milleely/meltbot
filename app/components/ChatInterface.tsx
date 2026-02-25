@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import ProgressBar from "@/app/components/ProgressBar";
 
 interface Message {
   role: "user" | "assistant";
@@ -11,6 +12,8 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState(0);
+  const [photoIdAttached, setPhotoIdAttached] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const greetingFired = useRef(false);
 
@@ -60,11 +63,30 @@ export default function ChatInterface() {
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInput("");
+
+    if (photoIdAttached && step >= 1 && step < 4) {
+      setStep((prev) => prev + 1);
+    }
+
+    fetchResponse(updatedMessages);
+  }
+
+  function handleAttachPhotoId() {
+    if (photoIdAttached || isLoading) return;
+    setPhotoIdAttached(true);
+    setStep(1);
+
+    const userMessage: Message = {
+      role: "user",
+      content: "[Photo ID attached: Driver's License]",
+    };
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     fetchResponse(updatedMessages);
   }
 
   return (
-    <div className="min-h-dvh flex flex-col bg-melt-bg">
+    <div className="min-h-full flex flex-col bg-melt-bg">
       {/* Header */}
       <div className="px-4 py-3 border-b border-melt-border flex items-center gap-3">
         <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-melt-accent text-melt-bg">
@@ -75,6 +97,9 @@ export default function ChatInterface() {
           <p className="text-xs text-melt-success">Online</p>
         </div>
       </div>
+
+      {/* Progress */}
+      <ProgressBar step={step} />
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
@@ -107,6 +132,19 @@ export default function ChatInterface() {
         )}
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Attach Photo ID */}
+      {!photoIdAttached && messages.length > 0 && (
+        <div className="px-4 pt-2">
+          <button
+            onClick={handleAttachPhotoId}
+            disabled={isLoading}
+            className="w-full py-2.5 rounded-xl text-xs font-medium border border-melt-border text-melt-muted hover:text-melt-text hover:border-melt-accent/50 transition-colors disabled:opacity-40"
+          >
+            Attach Photo ID
+          </button>
+        </div>
+      )}
 
       {/* Input */}
       <form

@@ -6,7 +6,7 @@ interface LockScreenProps {
 
 export default function LockScreen({ onResolveNow }: LockScreenProps) {
   return (
-    <div className="min-h-dvh flex flex-col justify-between px-6 py-12 bg-melt-bg">
+    <div className="min-h-full flex flex-col justify-between px-6 py-12 bg-melt-bg">
       {/* Header */}
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-melt-muted">Account</span>
@@ -21,22 +21,44 @@ export default function LockScreen({ onResolveNow }: LockScreenProps) {
         <div className="w-20 h-20 rounded-full flex items-center justify-center bg-melt-surface">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="w-10 h-10 text-melt-danger"
+            viewBox="0 0 48 48"
+            className="w-12 h-12"
             fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-            />
+            <defs>
+              <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#E05A4F" />
+                <stop offset="100%" stopColor="#A83228" />
+              </linearGradient>
+              <linearGradient id="shackleGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#E8685D" />
+                <stop offset="100%" stopColor="#B8382E" />
+              </linearGradient>
+              <filter id="lockShadow" x="-10%" y="-10%" width="130%" height="140%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.4" />
+              </filter>
+            </defs>
+            <g filter="url(#lockShadow)">
+              {/* Shackle */}
+              <path
+                d="M16 20V15C16 10.58 19.58 7 24 7C28.42 7 32 10.58 32 15V20"
+                stroke="url(#shackleGrad)"
+                strokeWidth="4"
+                strokeLinecap="round"
+              />
+              {/* Lock body */}
+              <rect x="12" y="20" width="24" height="20" rx="4" fill="url(#bodyGrad)" />
+              {/* Body highlight */}
+              <rect x="13" y="21" width="22" height="8" rx="3" fill="white" fillOpacity="0.1" />
+              {/* Keyhole */}
+              <circle cx="24" cy="29" r="2.5" fill="#1A1A1A" fillOpacity="0.6" />
+              <path d="M23 29L22.5 34H25.5L25 29" fill="#1A1A1A" fillOpacity="0.6" />
+            </g>
           </svg>
         </div>
 
         <h1 className="text-2xl font-semibold text-melt-text">
-          Your account has been frozen
+          Your account has been locked
         </h1>
 
         <p className="text-sm leading-relaxed max-w-[280px] text-melt-muted">
