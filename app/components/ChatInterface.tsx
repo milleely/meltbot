@@ -122,11 +122,15 @@ export default function ChatInterface() {
         {isLoading && (
           <div className="flex justify-start">
             <div className="px-4 py-3 rounded-2xl rounded-bl-md text-sm bg-melt-surface text-melt-muted">
-              <span className="inline-flex gap-1">
-                <span className="animate-bounce">.</span>
-                <span className="animate-bounce [animation-delay:0.15s]">.</span>
-                <span className="animate-bounce [animation-delay:0.3s]">.</span>
-              </span>
+              {messages.length === 0 ? (
+                <span className="animate-pulse">MeltBot is reading your case...</span>
+              ) : (
+                <span className="inline-flex gap-1">
+                  <span className="animate-bounce">.</span>
+                  <span className="animate-bounce [animation-delay:0.15s]">.</span>
+                  <span className="animate-bounce [animation-delay:0.3s]">.</span>
+                </span>
+              )}
             </div>
           </div>
         )}
