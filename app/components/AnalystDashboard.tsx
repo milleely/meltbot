@@ -4,14 +4,15 @@ import { useState } from "react";
 
 interface AnalystDashboardProps {
   caseSummary: Record<string, unknown> | null;
+  onDecision?: (decision: "approved" | "escalated") => void;
 }
 
-export default function AnalystDashboard({ caseSummary }: AnalystDashboardProps) {
+export default function AnalystDashboard({ caseSummary, onDecision }: AnalystDashboardProps) {
   const [decision, setDecision] = useState<"approved" | "escalated" | null>(null);
 
   if (!caseSummary) {
     return (
-      <div className="min-h-full flex items-center justify-center bg-[#F5F3EF]">
+      <div className="min-h-[600px] flex items-center justify-center bg-[#F5F3EF]">
         <div className="text-center space-y-2">
           <p className="text-sm text-[#6B6B6B]">No cases pending review</p>
           <p className="text-xs text-[#9B9B9B]">
@@ -30,7 +31,7 @@ export default function AnalystDashboard({ caseSummary }: AnalystDashboardProps)
 
   if (decision) {
     return (
-      <div className="min-h-full flex items-center justify-center bg-[#F5F3EF]">
+      <div className="min-h-[600px] flex items-center justify-center bg-[#F5F3EF]">
         <div className="text-center space-y-3 px-8">
           <div
             className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center ${
@@ -59,7 +60,7 @@ export default function AnalystDashboard({ caseSummary }: AnalystDashboardProps)
   }
 
   return (
-    <div className="min-h-full bg-[#F5F3EF] px-5 py-6 overflow-y-auto">
+    <div className="min-h-[600px] bg-[#F5F3EF] px-5 py-6 overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-base font-semibold text-[#1A1A1A]">Case Review</h1>
@@ -104,13 +105,13 @@ export default function AnalystDashboard({ caseSummary }: AnalystDashboardProps)
       {/* Actions */}
       <div className="flex gap-3 mt-6">
         <button
-          onClick={() => setDecision("approved")}
+          onClick={() => { setDecision("approved"); onDecision?.("approved"); }}
           className="flex-1 py-3 rounded-xl text-xs font-semibold bg-[#4A9B6E] text-white transition-opacity hover:opacity-90 active:scale-[0.98]"
         >
           Approve Unfreeze
         </button>
         <button
-          onClick={() => setDecision("escalated")}
+          onClick={() => { setDecision("escalated"); onDecision?.("escalated"); }}
           className="flex-1 py-3 rounded-xl text-xs font-semibold bg-[#C9A96E] text-white transition-opacity hover:opacity-90 active:scale-[0.98]"
         >
           Escalate
